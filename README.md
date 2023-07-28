@@ -23,6 +23,9 @@ docker run --rm -it \
     -e S3_ACCESS_KEY_ID="KEY-ID" \
     -e S3_SECRET_ACCESS_KEY="KEY-SECRET" \
     -e S3_BUCKET="BUCKET-NAME" \
+    -e WEBHOOK_URL=http://webhook \
+    -e TG_GROUP=point_to_notify_group \
+    -e POSTGRES_PORT=if_not_5432 \
     --entrypoint /bin/bash \
     IMAGE-NAME:tag
 ```
@@ -41,5 +44,13 @@ docker run -d \
     -e S3_ACCESS_KEY_ID="KEY-ID" \
     -e S3_SECRET_ACCESS_KEY="KEY-SECRET" \
     -e S3_BUCKET="BUCKET-NAME" \
+    -e WEBHOOK_URL=http://webhook \
+    -e TG_GROUP=point_to_notify_group \
+    -e POSTGRES_PORT=if_not_5432 \
     IMAGE-NAME:tag
 ```
+
+## Variables
+
+TG_GROUP    - Notifying group
+WEBHOOK_URL - Notificator URL

@@ -23,10 +23,14 @@ IFS=$'\n\t'
 # Set S3 connection configuration
     mcli alias set backup $S3_ENDPOINT $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY
 
-# Create the bucket
-    mcli mb backup/$S3_BUCKET
-    mcli cp $POSTGRES_DB.$BACKUP_SUFFIX backup/$S3_BUCKET/$timestamp/$POSTGRES_DB.$BACKUP_SUFFIX
+# Create the bucket (Only enable if neccessary)
+#    mcli mb backup/$S3_BUCKET
+    mcli cp $POSTGRES_DB.$BACKUP_SUFFIX backup/$S3_BUCKET/$POSTGRES_DB/$timestamp/$POSTGRES_DB.$BACKUP_SUFFIX
 
 # Do nettoyage
     echo "Maid is here... Doing cleaning..."
     rm -f $POSTGRES_DB.*
+
+# Do anounce
+    txt="Backuped successfully to $S3_ENDPOINT/$S3_BUCKET/$timestamp/$POSTGRES_DB.$BACKUP_SUFFIX"
+    hooks/00-webhook.sh $txt
