@@ -6,12 +6,13 @@ Docker image for universal postgres backups
 - [ ] Add retention policy settings by env vars
 - [ ] Notify about backup status by HTTP-request
 
-# Docker build
+## Docker build
 ```
 docker build . -t pg-backups:0.0.1
 ```
 
-# How to backup manually
+# Usage
+## Backup manually:
 ```
 docker run --rm -it \
     -e POSTGRES_HOST="FQDN-OR-IP" \
@@ -29,7 +30,7 @@ docker run --rm -it \
 # ./backup.sh
 ```
 
-# How to backup using `go-cron`
+## Backup using `go-cron`
 ```
 docker run -d \
     -e POSTGRES_HOST="FQDN-OR-IP" \
