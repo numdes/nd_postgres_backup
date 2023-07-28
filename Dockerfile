@@ -4,6 +4,9 @@ FROM debian:stable as base
 
 MAINTAINER NumDes <info@numdes.com>
 
+LABEL org.opencontainers.image.vendor="Numerical Design LLC"
+LABEL org.opencontainers.image.description="Docker image for universal postgres backups"
+
 ARG GOCRONVER=v0.0.10
 
 RUN apt-get update \
