@@ -9,13 +9,13 @@ Docker image for universal postgres backups
 - [ ] Add docker-compose example
 
 ## Docker build
-```
+```shell
 docker build . -t pg-backups:0.0.1
 ```
 
 # Usage
 ## Backup manually:
-```
+```shell
 docker run --rm -it \
     -e POSTGRES_HOST="FQDN-OR-IP" \
     -e POSTGRES_DB="DB-NAME" \
@@ -31,12 +31,12 @@ docker run --rm -it \
     --entrypoint /bin/bash \
     IMAGE-NAME:tag
 ```
-```
+```shell
 # ./backup.sh
 ```
 
 ## Backup using `go-cron`
-```
+```shell
 docker run -d \
     -e POSTGRES_HOST="FQDN-OR-IP" \
     -e POSTGRES_DB="DB-NAME" \
