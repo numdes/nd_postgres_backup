@@ -1,17 +1,17 @@
 name: Docker Image CI
 
-on: push
-  # workflow_dispatch:
-  # push:
-  #   branches:
-  #     - 'main'
-  #     - 'master'
-  #   tags:
-  #     - 'v*'
-  # pull_request:
-  #   branches:
-  #     - 'main'
-  #     - 'master'
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+      - 'master'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
+      - 'master'
 
 env:
   REGISTRY: docker.io
