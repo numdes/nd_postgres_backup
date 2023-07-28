@@ -52,5 +52,7 @@ docker run -d \
 
 ## Variables
 
-TG_GROUP    - Notifying group
-WEBHOOK_URL - Notificator URL
+| Name        |  Description      |
+|-------------|-------------------|
+|TG_GROUP     | Notifying group   |
+|WEBHOOK_URL  | Notificator URL   |
