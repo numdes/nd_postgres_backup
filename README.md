@@ -3,6 +3,7 @@ Docker image for universal postgres backups
 
 # Roadmap
 - [X] Add support for S3
+- [X] Add CI/CD to publish image to DockerHub
 - [ ] Add retention policy settings by env vars
 - [ ] Notify about backup status by HTTP-request
 - [ ] Add docker-compose example
@@ -53,7 +54,9 @@ docker run -d \
 
 ## Variables
 
-| Name        |  Description      |
-|-------------|-------------------|
-|TG_GROUP     | Notifying group   |
-|WEBHOOK_URL  | Notificator URL   |
+| Name              |  Description                  |
+|-------------------|-------------------------------|
+|TG_GROUP           | Notifying group               |
+|WEBHOOK_URL        | Notificator URL               |
+|DOCKERHUB_LOGIN    | `Actions` Repository secret   |
+|DOCKERHUB_PASSWORD | `Actions` Repository secret   |
