@@ -17,12 +17,12 @@ export PGPASSWORD=${POSTGRES_PASSWORD}
 
 # Will create base backup
 echo "Creating backup of ${POSTGRES_DB} database..."
-pg_dump --username ${POSTGRES_USER} \
-        -h ${POSTGRES_HOST} \
-        -p ${POSTGRES_PORT} \
-        -d ${POSTGRES_DB} \
-        ${POSTGRES_EXTRA_OPTS} \
-        > ${POSTGRES_DB}.sql
+pg_dump --username "${POSTGRES_USER}" \
+        -h "${POSTGRES_HOST}" \
+        -p "${POSTGRES_PORT}" \
+        -d "${POSTGRES_DB}" \
+        "${POSTGRES_EXTRA_OPTS}" \
+        > "${POSTGRES_DB}".sql
 # Do compression
 tar -czvf "${POSTGRES_DB}.${BACKUP_SUFFIX} ${POSTGRES_DB}.sql"
 
@@ -31,8 +31,8 @@ mcli alias set backup "${S3_ENDPOINT} ${S3_ACCESS_KEY_ID} ${S3_SECRET_ACCESS_KEY
 
 # Create the bucket (Only enable if neccessary)
 #    mcli mb backup/${S3_BUCKET}
-mcli cp ${POSTGRES_DB}.${BACKUP_SUFFIX} \
-     backup/${S3_BUCKET}/${POSTGRES_DB}/${timestamp}/${POSTGRES_DB}.${BACKUP_SUFFIX}
+mcli cp "${POSTGRES_DB}.${BACKUP_SUFFIX}" \
+     backup/"${S3_BUCKET}/${POSTGRES_DB}/${timestamp}/${POSTGRES_DB}.${BACKUP_SUFFIX}"
 
 # Do nettoyage
 echo "Maid is here... Doing cleaning..."
