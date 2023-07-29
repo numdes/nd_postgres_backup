@@ -25,14 +25,15 @@ docker run --rm -it \
     -e S3_ACCESS_KEY_ID="KEY-ID" \
     -e S3_SECRET_ACCESS_KEY="KEY-SECRET" \
     -e S3_BUCKET="BUCKET-NAME" \
-    -e WEBHOOK_URL=http://webhook \
-    -e TG_GROUP=point_to_notify_group \
+    -e NOTIFICATION_URL=http://webhook \
+    -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
     --entrypoint /bin/bash \
     IMAGE-NAME:tag
 ```
+To run backup, in active container shell call `backup.sh` script
 ```shell
-# ./backup.sh
+./backup.sh
 ```
 
 ## Backup using `go-cron`
@@ -46,8 +47,8 @@ docker run -d \
     -e S3_ACCESS_KEY_ID="KEY-ID" \
     -e S3_SECRET_ACCESS_KEY="KEY-SECRET" \
     -e S3_BUCKET="BUCKET-NAME" \
-    -e WEBHOOK_URL=http://webhook \
-    -e TG_GROUP=point_to_notify_group \
+    -e NOTIFICATION_URL=http://webhook \
+    -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
     IMAGE-NAME:tag
 ```
@@ -56,7 +57,7 @@ docker run -d \
 
 | Name              |  Description                  |
 |-------------------|-------------------------------|
-|TG_GROUP           | Notifying group               |
-|WEBHOOK_URL        | Notificator URL               |
+|TELEGRAM_CHAT_ID   | Notifying group               |
+|NOTIFICATION_URL   | Notifier URL                  |
 |DOCKERHUB_LOGIN    | `Actions` Repository secret   |
 |DOCKERHUB_PASSWORD | `Actions` Repository secret   |
