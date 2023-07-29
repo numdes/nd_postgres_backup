@@ -23,11 +23,18 @@ pg_dump --username "${POSTGRES_USER}" \
         -d "${POSTGRES_DB}" \
         "${POSTGRES_EXTRA_OPTS}" \
         > "${POSTGRES_DB}".sql
+
+# Declaring variables for informational purposes
+copy_file_name="${POSTGRES_DB}.${BACKUP_SUFFIX}"
+copy_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}"
+mcli_copy_path="${copy_path}/${copy_file_name}"
+info_copy_path="${S3_ENDPOINT}/${copy_path}"
+
 # Do compression
-tar -czvf "${POSTGRES_DB}.${BACKUP_SUFFIX}" "${POSTGRES_DB}.sql"
+tar -czvf "${copy_file_name}" "${POSTGRES_DB}.sql"
 
 # Count file size
-size_in_bytes="$(du -b "${POSTGRES_DB}.${BACKUP_SUFFIX}" | awk '{print $1}')"
+size_in_bytes="$(du -b "${copy_file_name}" | awk '{print $1}')"
 if (( size_in_bytes < 1048576 )); then
   file_measure=" Kb"
   file_size="$((size_in_bytes / 1024))"
@@ -42,14 +49,12 @@ else
   send_file_size="${file_size}${file_measure}"
 fi
 
+
+echo "Backed up ${copy_file_name} with file size: ${send_file_size}"
+
 # Set S3 connection configuration
 mcli alias set backup "${S3_ENDPOINT}" "${S3_ACCESS_KEY_ID}" "${S3_SECRET_ACCESS_KEY}"
 
-# Declaring variables for informational purposes
-copy_file_name="${POSTGRES_DB}.${BACKUP_SUFFIX}"
-copy_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}"
-mcli_copy_path="${copy_path}/${copy_file_name}"
-info_copy_path="${S3_ENDPOINT}/${copy_path}"
 echo "Starting to copy ${copy_file_name} to ${info_copy_path}..."
 
 # Create the bucket (Only enable if neccessary)
