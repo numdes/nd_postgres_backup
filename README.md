@@ -10,7 +10,7 @@ Docker image for universal postgres backups
 
 ## Docker build
 ```shell
-docker build . -t pg-backups:0.0.1
+docker build . -t numdes/nd_postgres_backup:v*.*.*
 ```
 
 # Usage
@@ -29,7 +29,7 @@ docker run --rm -it \
     -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
     --entrypoint /bin/bash \
-    IMAGE-NAME:tag
+    numdes/nd_postgres_backup:v*.*.*
 ```
 To run backup, in active container shell call `backup.sh` script
 ```shell
@@ -50,14 +50,39 @@ docker run -d \
     -e NOTIFICATION_URL=http://webhook \
     -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
-    IMAGE-NAME:tag
+    numdes/nd_postgres_backup:v*.*.*
 ```
 
 ## Variables
 
-| Name              |  Description                  |
-|-------------------|-------------------------------|
-|TELEGRAM_CHAT_ID   | Notifying group               |
-|NOTIFICATION_URL   | Notifier URL                  |
-|DOCKERHUB_LOGIN    | `Actions` Repository secret   |
-|DOCKERHUB_PASSWORD | `Actions` Repository secret   |
+| Name              |  Description                                        |
+|-------------------|-----------------------------------------------------|
+|TELEGRAM_METHOD    | By default used `private`                           |
+|TELEGRAM_CHAT_ID   | Notifying group                                     |
+|NOTIFICATION_URL   | Notifier URL                                        |
+|TELEGRAM_BOT_TOKEN | Only used when TELEGRAM_METHOD is set to `external` |
+|DOCKERHUB_LOGIN    | `Actions` Repository secret                         |
+|DOCKERHUB_PASSWORD | `Actions` Repository secret                         |
+
+### TELEGRAM_METHOD environment variable
+
+Variable is used to select which notification method is going to be used. In case of usage
+local Telegram bot variable must be set to `private` (default). If public Telegram API
+going to be selected then `TELEGRAM_METHOD` must be set to `external` and in `docker ...` command need to replace:
+```
+-e NOTIFICATION_URL=http://webhook \
+-e TELEGRAM_CHAT_ID=point_to_notify_group \
+```
+to
+```
+    -e TELEGRAM_METHOD=external \
+    -e TELEGRAM_BOT_TOKEN='XXXXXXX:XXXXxxxxXXXXxxx' \
+    -e TELEGRAM_CHAT_ID=000000000 \
+```
+- If TELEGRAM_METHOD variable is set to `private` `private-webhook.sh` will be executed
+and notification processing will be passed to internal Telegram bot. Along with
+`private` flag following variables come: `TELEGRAM_CHAT_ID`, `NOTIFICATION_URL`
+- If TELEGRAM_METHOD variable is set to `external` `external-webhook.sh` will be executed
+and notification processing will be passed to standard Telegram API URL. Along with
+`external` flag following variables come: `TELEGRAM_CHAT_ID`, `TELEGRAM_BOT_TOKEN`
+- If TELEGRAM_METHOD variable is set to anything else only `echo` will be used

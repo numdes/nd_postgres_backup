@@ -3,20 +3,20 @@
 # Script made for backup PostgreSQL database from local (${POSTGRES_HOST}=127.0.0.1)
 # or remote host. Created backup puts on S3 storage. On completion script calls
 # notification script hooks/00-webhook.sh which sends report to given Telegram Chat
-#
-# TODO (siameseoriental) Implement error handling
 
 set -euo pipefail
 IFS=$'\n\t'
 
 # Will be name of directory in backet dd-mm-yyyy_hh-mm-ss
-timestamp="$(date date +%FT%T%Z)"
+timestamp="$(date +%F_%T)"
 
 # Export stuff
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
 # Will create base backup
-echo "Creating backup of ${POSTGRES_DB} database..."
+echo "Creating backup of ${POSTGRES_DB} database. From ${POSTGRES_HOST} and port \
+is ${POSTGRES_PORT}. Username: ${POSTGRES_USER}. With following extra options: \
+${POSTGRES_EXTRA_OPTS}"
 pg_dump --username "${POSTGRES_USER}" \
         -h "${POSTGRES_HOST}" \
         -p "${POSTGRES_PORT}" \
@@ -24,21 +24,51 @@ pg_dump --username "${POSTGRES_USER}" \
         "${POSTGRES_EXTRA_OPTS}" \
         > "${POSTGRES_DB}".sql
 # Do compression
-tar -czvf "${POSTGRES_DB}.${BACKUP_SUFFIX} ${POSTGRES_DB}.sql"
+tar -czvf "${POSTGRES_DB}.${BACKUP_SUFFIX}" "${POSTGRES_DB}.sql"
+
+# Count file size
+size_in_bytes="$(du -b "${POSTGRES_DB}.${BACKUP_SUFFIX}" | awk '{print $1}')"
+if (( size_in_bytes < 1048576 )); then
+  file_measure=" Kb"
+  file_size="$((size_in_bytes / 1024))"
+  send_file_size="${file_size}${file_measure}"
+elif (( size_in_bytes < 1073741824 )); then
+  file_measure=" Mb"
+  file_size="$((size_in_bytes / (1024 * 1024)))"
+  send_file_size="${file_size}${file_measure}"
+else
+  file_measure=" Gb"
+  file_size="$((size_in_bytes / (1024 * 1024 * 1024)))"
+  send_file_size="${file_size}${file_measure}"
+fi
 
 # Set S3 connection configuration
-mcli alias set backup "${S3_ENDPOINT} ${S3_ACCESS_KEY_ID} ${S3_SECRET_ACCESS_KEY}"
+mcli alias set backup "${S3_ENDPOINT}" "${S3_ACCESS_KEY_ID}" "${S3_SECRET_ACCESS_KEY}"
+
+# Declaring variables for informational purposes
+copy_file_name="${POSTGRES_DB}.${BACKUP_SUFFIX}"
+copy_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}"
+mcli_copy_path="${copy_path}/${copy_file_name}"
+info_copy_path="${S3_ENDPOINT}/${copy_path}"
+echo "Starting to copy ${copy_file_name} to ${info_copy_path}..."
 
 # Create the bucket (Only enable if neccessary)
 #    mcli mb backup/${S3_BUCKET}
-mcli cp "${POSTGRES_DB}.${BACKUP_SUFFIX}" \
-     backup/"${S3_BUCKET}/${POSTGRES_DB}/${timestamp}/${POSTGRES_DB}.${BACKUP_SUFFIX}"
+mcli cp "${copy_file_name}" backup/"${mcli_copy_path}"
 
 # Do nettoyage
 echo "Maid is here... Doing cleaning..."
 rm -f "${POSTGRES_DB}.*"
 
 # Do anounce
-txt="Backuped successfully to
-${S3_ENDPOINT}/${S3_BUCKET}/${POSTGRES_DB}/${timestamp}/${POSTGRES_DB}.${BACKUP_SUFFIX}"
-hooks/00-webhook.sh "${txt}"
+if [[ ${TELEGRAM_METHOD} == 'private' ]]; then
+  txt="Backed up ${copy_file_name} with file size: ${send_file_size} \
+  to ${info_copy_path}"
+  hooks/private-webhook.sh "${txt}"
+elif [[ ${TELEGRAM_METHOD} == 'external' ]]; then
+  txt="Backed up ${copy_file_name} with file size: ${send_file_size} \
+  to ${info_copy_path}"
+  hooks/external-webhook.sh "${txt}"
+else
+  echo "No notification methods selected"
+fi
