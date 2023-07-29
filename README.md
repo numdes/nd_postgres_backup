@@ -68,7 +68,15 @@ docker run -d \
 
 Variable is used to select which notification method is going to be used. In case of usage
 local Telegram bot variable must be set to `private` (default). If public Telegram API
-going to be selected then `TELEGRAM_METHOD` must be set to `external` and in `docker ...` command need to replace:
+going to be selected then `TELEGRAM_METHOD` must be set to `external`.
+- If TELEGRAM_METHOD variable is set to `private` `private-webhook.sh` will be executed
+and notification processing will be passed to internal Telegram bot. Along with
+`private` flag following variables come: `TELEGRAM_CHAT_ID`, `NOTIFICATION_URL`
+- If TELEGRAM_METHOD variable is set to `external` `external-webhook.sh` will be executed
+and notification processing will be passed to standard Telegram API URL. Along with
+`external` flag following variables come: `TELEGRAM_CHAT_ID`, `TELEGRAM_BOT_TOKEN`
+
+In `docker ...` command need to replace:
 ```
 -e NOTIFICATION_URL=http://webhook \
 -e TELEGRAM_CHAT_ID=point_to_notify_group \
@@ -78,11 +86,5 @@ to
     -e TELEGRAM_METHOD=external \
     -e TELEGRAM_BOT_TOKEN='XXXXXXX:XXXXxxxxXXXXxxx' \
     -e TELEGRAM_CHAT_ID=000000000 \
-```
-- If TELEGRAM_METHOD variable is set to `private` `private-webhook.sh` will be executed
-and notification processing will be passed to internal Telegram bot. Along with
-`private` flag following variables come: `TELEGRAM_CHAT_ID`, `NOTIFICATION_URL`
-- If TELEGRAM_METHOD variable is set to `external` `external-webhook.sh` will be executed
-and notification processing will be passed to standard Telegram API URL. Along with
-`external` flag following variables come: `TELEGRAM_CHAT_ID`, `TELEGRAM_BOT_TOKEN`
+``` 
 - If TELEGRAM_METHOD variable is set to anything else only `echo` will be used
