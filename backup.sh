@@ -2,7 +2,8 @@
 #
 # Script made for backup PostgreSQL database from local (${POSTGRES_HOST}=127.0.0.1)
 # or remote host. Created backup stores in S3 storage. On completion script calls
-# notification script hooks/00-webhook.sh which sends report to given Telegram Chat
+# notification scripts from hooks/ directory to send report to given Telegram Chat
+# based on variables set private or public notification method will be selected 
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -30,7 +31,6 @@ mcli_copy_path="${copy_path}/${copy_file_name}"
 info_copy_path="${S3_ENDPOINT}/${copy_path}"
 
 # Do compression
-#tar -czvf "${copy_file_name}" "${POSTGRES_DB}.sql"
 tar --create \
     --gzip \
     --verbose \
