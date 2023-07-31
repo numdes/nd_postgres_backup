@@ -50,10 +50,10 @@ docker run -d \
     -e PRIVATE_NOTIFICATION_URL=http://webhook \
     -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
-    -e SCHEDULE=[Chosen_schedule][^1]
+    -e SCHEDULE=Chosen_schedule
     numdes/nd_postgres_backup:v*.*.*
 ```
-[^1]: By default `SCHEDULE` variable is set to `@daily` in case if you need other scheduling options, please refer to `go-cron` *[Documentation](https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-Predefined_schedules)*.
+:wave: By default `SCHEDULE` variable is set to `@daily` in case if you need other scheduling options, please refer to `go-cron` *[Documentation](https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-Predefined_schedules)*.
 
 ## Variables
 ### `Gitlab Actions` *[variables](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository)*:
