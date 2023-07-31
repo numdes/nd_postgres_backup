@@ -4,7 +4,7 @@
 # or remote host. Created backup stores in S3 storage. On completion script calls
 # notification script hooks/00-webhook.sh which sends report to given Telegram Chat
 
-set -euox pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # Will be name of directory in backet yyyy-mm-dd_HH:MM:SS
