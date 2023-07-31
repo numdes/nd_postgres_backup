@@ -50,10 +50,10 @@ docker run -d \
     -e PRIVATE_NOTIFICATION_URL=http://webhook \
     -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
-    -e SCHEDULE=[Chosen_schedule][1]
+    -e SCHEDULE=[Chosen_schedule][^1]
     numdes/nd_postgres_backup:v*.*.*
 ```
-[1]: By default `SCHEDULE` variable is set to `@daily` in case if you need other scheduling options, please refer to `go-cron` *[Documentation](https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-Predefined_schedules)*.
+[^1]: By default `SCHEDULE` variable is set to `@daily` in case if you need other scheduling options, please refer to `go-cron` *[Documentation](https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-Predefined_schedules)*.
 
 ## Variables
 ### `Gitlab Actions` *[variables](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository)*:
@@ -79,7 +79,7 @@ docker run -d \
 | POSTGRES_USER          |  -         | Database user                                  |
 | POSTGRES_PASSWORD      |  -         | Database user password                         |
 | POSTGRES_EXTRA_OPTS    | --blobs    | Extra options `pg_dump` run                    |
-| SCHEDULE               | @daily     | `go-cron` schedule. See *[this](https://github.com/siameseoriental/nd_postgres_backup/tree/DO-101#backup-using-go-cron)* |
+| SCHEDULE               | @daily     | `go-cron` schedule. See [this](#backup-using-go-cron) |
 | HEALTHCHECK_PORT       | 8080       | Port listening for cron-schedule health check. |
 | S3_ACCESS_KEY_ID       |  -         | Key or username with RW access to bucket       |
 | S3_SECRET_ACCESS_KEY   |  -         | Secret or password for `S3_ACCESS_KEY_ID`      |
