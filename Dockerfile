@@ -34,7 +34,7 @@ ENV POSTGRES_DB="**None**" \
     S3_ACCESS_KEY_ID="**None**" \
     S3_SECRET_ACCESS_KEY="**None**" \
     S3_BUCKET="**None**" \
-    S3_ENDPOINT="**None**" \
+    S3_ENDPOINT="**None**"
 
 COPY backup.sh /backup.sh
 RUN chmod +x backup.sh
