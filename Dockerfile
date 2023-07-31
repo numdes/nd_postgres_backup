@@ -30,13 +30,11 @@ ENV POSTGRES_DB="**None**" \
     POSTGRES_PASSWORD="**None**" \
     POSTGRES_EXTRA_OPTS="--blobs" \
     SCHEDULE="@daily" \
-    BACKUP_SUFFIX="tar.gz" \
     HEALTHCHECK_PORT=8080 \
     S3_ACCESS_KEY_ID="**None**" \
     S3_SECRET_ACCESS_KEY="**None**" \
     S3_BUCKET="**None**" \
     S3_ENDPOINT="**None**" \
-    TELEGRAM_METHOD="private"
 
 COPY backup.sh /backup.sh
 RUN chmod +x backup.sh

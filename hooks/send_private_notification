@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+# Use http request to send notification to Telegram chat through local Telegram bot
+
+set -eo pipefail
+IFS=$'\n\t'
+
+copy_file_name="${1}"
+send_file_size="${2}"
+info_copy_path="${3}"
+
+message_text="Backed up ${copy_file_name} with file size: ${send_file_size} \
+to ${info_copy_path}"
+
+if [[ -n "${PRIVATE_NOTIFICATION_URL}" ]]; then
+    curl -XPOST \
+      --url "${PRIVATE_NOTIFICATION_URL}" \
+      --header 'Content-Type: application/json' \
+      --data "{\"key\": \"${TELEGRAM_CHAT_ID}\", \"text\": \"${message_text}\"}" \
+      --max-time 10 \
+      --retry 5
+fi
