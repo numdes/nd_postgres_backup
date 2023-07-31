@@ -38,7 +38,7 @@ tar --create \
     "${POSTGRES_DB}.sql"
 
 # Count file size
-send_file_size="$(ls -lh | grep "${copy_file_name}" | awk '{print $5}')"
+send_file_size="$(ls -lh "${copy_file_name}" | awk '{print $5}')"
 
 echo "Created ${copy_file_name} with file size: ${send_file_size}"
 

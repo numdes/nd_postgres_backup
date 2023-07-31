@@ -17,7 +17,7 @@ if [[ -n "${TELEGRAM_BOT_TOKEN}" ]]; then
     curl -s \
       --data "text=${message_text}" \
       --data "chat_id=${TELEGRAM_CHAT_ID}" \
-      'https://api.telegram.org/bot'${TELEGRAM_BOT_TOKEN}'/sendMessage' > /dev/null
+      'https://api.telegram.org/bot'"${TELEGRAM_BOT_TOKEN}"'/sendMessage' > /dev/null
   else
     echo "Telegram chatID doesn't matched to standard pattern. Probably \
     TELEGRAM_BOT_TOKEN variable was set by mistake"
