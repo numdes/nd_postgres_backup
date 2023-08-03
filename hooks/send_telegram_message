@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# Use http request to send notification to Telegram chat through external Telegram API
+
+set -eo pipefail
+IFS=$'\n\t'
+
+copy_file_name="${1}"
+send_file_size="${2}"
+info_copy_path="${3}"
+
+message_text="Backed up ${copy_file_name} with file size: ${send_file_size} \
+to ${info_copy_path}"
+
+if [[ -n "${TELEGRAM_BOT_TOKEN}" ]]; then
+  if [[ "${TELEGRAM_CHAT_ID}" =~ ^[0-9]{5,32}$ ]]; then
+    curl -s \
+      --data "text=${message_text}" \
+      --data "chat_id=${TELEGRAM_CHAT_ID}" \
+      'https://api.telegram.org/bot'"${TELEGRAM_BOT_TOKEN}"'/sendMessage' > /dev/null
+  else
+    echo "Telegram chatID doesn't matched to standard pattern. Probably \
+    TELEGRAM_BOT_TOKEN variable was set by mistake"
+  fi
+fi
