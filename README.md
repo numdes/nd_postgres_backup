@@ -10,7 +10,7 @@ Docker image for universal postgres backups
 
 ## Docker build
 ```shell
-docker build . -t numdes/nd_postgres_backup:v*.*.*
+docker build . -t numdes/nd_postgres_backup:0.1.0
 ```
 
 # Usage
@@ -29,9 +29,10 @@ docker run --rm -it \
     -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
     --entrypoint /bin/bash \
-    numdes/nd_postgres_backup:v*.*.*
+    numdes/nd_postgres_backup:0.1.0
 ```
-To run backup, in active container shell call `backup.sh` script
+
+To run backup in active container shell call `backup.sh` script
 ```shell
 ./backup.sh
 ```
@@ -51,7 +52,7 @@ docker run -d \
     -e TELEGRAM_CHAT_ID=point_to_notify_group \
     -e POSTGRES_PORT=if_not_5432 \
     -e SCHEDULE=Chosen_schedule
-    numdes/nd_postgres_backup:v*.*.*
+    numdes/nd_postgres_backup:0.1.0
 ```
 :wave: By default `SCHEDULE` variable is set to `@daily` in case if you need other scheduling options, please refer to `go-cron` *[Documentation](https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-Predefined_schedules)*.
 
