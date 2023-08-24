@@ -3,7 +3,7 @@
 # Script made for backup PostgreSQL database from local (${POSTGRES_HOST}=127.0.0.1)
 # or remote host. Created backup stores in S3 storage. On completion script calls
 # notification scripts from hooks/ directory to send report to given Telegram Chat
-# based on variables set private or public notification method will be selected 
+# based on variables set private or public notification method will be selected
 
 set -euo pipefail
 IFS=$'\n\t'

@@ -39,10 +39,13 @@ ENV POSTGRES_DB="**None**" \
 COPY backup.sh /backup.sh
 RUN chmod +x backup.sh
 
+COPY init_script.sh /init_script.sh
+RUN chmod +x init_script.sh
+
 COPY hooks /hooks
 
 ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["exec /usr/local/bin/go-cron -s \"$SCHEDULE\" -p \"$HEALTHCHECK_PORT\" -- /backup.sh"]
+CMD ["./init_script.sh"]
 
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f "http://localhost:$HEALTHCHECK_PORT/" || exit 1

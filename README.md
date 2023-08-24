@@ -70,20 +70,20 @@ docker run -d \
 |TELEGRAM_BOT_TOKEN         | Only used to call Telegram's public API             |
 
 ### Environmental variables
-| Name                   | Default value   | Description                               |
-|------------------------|  :------   |------------------------------------------------|
-| POSTGRES_DB            |  -         | Database name                                  |
-| POSTGRES_HOST          |  -         | PostgreSQL IP address or hostname              |
-| POSTGRES_PORT          | 5432       | Connection TCP port                            |
-| POSTGRES_USER          |  -         | Database user                                  |
-| POSTGRES_PASSWORD      |  -         | Database user password                         |
-| POSTGRES_EXTRA_OPTS    | --blobs    | Extra options `pg_dump` run                    |
-| SCHEDULE               | @daily     | `go-cron` schedule. See [this](#backup-using-go-cron) |
-| HEALTHCHECK_PORT       | 8080       | Port listening for cron-schedule health check. |
-| S3_ACCESS_KEY_ID       |  -         | Key or username with RW access to bucket       |
-| S3_SECRET_ACCESS_KEY   |  -         | Secret or password for `S3_ACCESS_KEY_ID`      |
-| S3_BUCKET              |  -         | Name of bucket created for backups             |
-| S3_ENDPOINT            |  -         | URL of S3 storage                              |
+| Name                   | Default value  | Is mandatory | | Description                               |
+|------------------------|  :------   |  :------:   |------------------------------------------------|
+| POSTGRES_DB            |  -         |   YES  | Database name                                  |
+| POSTGRES_HOST          |  -         |   YES  | PostgreSQL IP address or hostname              |
+| POSTGRES_PORT          | 5432       |   -  | Connection TCP port                            |
+| POSTGRES_USER          |  -         |   YES  | Database user                                  |
+| POSTGRES_PASSWORD      |  -         |   YES  | Database user password                         |
+| POSTGRES_EXTRA_OPTS    | --blobs    |   -  | Extra options `pg_dump` run                    |
+| SCHEDULE               | @daily     |   -  | `go-cron` schedule. See [this](#backup-using-go-cron) |
+| HEALTHCHECK_PORT       | 8080       |   -  | Port listening for cron-schedule health check. |
+| S3_ACCESS_KEY_ID       |  -         |   YES  | Key or username with RW access to bucket       |
+| S3_SECRET_ACCESS_KEY   |  -         |   YES  | Secret or password for `S3_ACCESS_KEY_ID`      |
+| S3_BUCKET              |  -         |   YES  | Name of bucket created for backups             |
+| S3_ENDPOINT            |  -         |   YES  | URL of S3 storage                              |
 
 ### Notification selection
 
