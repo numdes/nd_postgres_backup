@@ -70,7 +70,7 @@ docker run -d \
 |TELEGRAM_BOT_TOKEN         | Only used to call Telegram's public API             |
 
 ### Environmental variables
-| Name                   | Default value  | Is mandatory | | Description                               |
+| Name                   | Default value  | Is mandatory |  Description                               |
 |------------------------|  :------   |  :------:   |------------------------------------------------|
 | POSTGRES_DB            |  -         |   YES  | Database name                                  |
 | POSTGRES_HOST          |  -         |   YES  | PostgreSQL IP address or hostname              |
