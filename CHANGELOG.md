@@ -18,6 +18,9 @@ Stub:
 
 # nd_postgres_backup
 
+## [0.2.1] - 2023-08-25
+- Added var `S3_OBJECT_PATH` to define the path to the backup file in the bucket
+
 ## [0.2.0] - 2023-08-25
 - refactoring and verification
 ### Braking changes

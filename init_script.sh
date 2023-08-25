@@ -16,7 +16,7 @@ if [[ ${S3_ACCESS_KEY} == "**None**" ]] ||
    [[ ${POSTGRES_USER} == "**None**" ]] ||
    [[ ${POSTGRES_PASSWORD} == "**None**" ]]; then
   echo "One or more mandatory values is missing. Check your configuration..." >&2
-  exit 0
+  exit 1
 else
 # Will create base backup
   echo "All needed variables seems set. Starting main procedure"

@@ -1,21 +1,16 @@
 #!/usr/bin/env bash
 #
-# Script made for backup PostgreSQL database from local (${POSTGRES_HOST}=127.0.0.1)
-# or remote host. Created backup stores in S3 storage. On completion script calls
-# notification scripts from hooks/ directory to send report to given Telegram Chat
-# based on variables set private or public notification method will be selected
+# Script for backing up PostgreSQL database and upload backup to S3.
+# After backup is done, script optionally can send notification to Telegram chat or to private URL
 
 set -euo pipefail
 IFS=$'\n\t'
 
-# Will be name of directory in backet yyyy-mm-dd_HH:MM:SS
-timestamp="$(date +%F_%T)"
-
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
 # Will create base backup
-echo "Creating backup of ${POSTGRES_DB} database that is accessible from [${POSTGRES_HOST}:${POSTGRES_PORT}]\
-by username [${POSTGRES_USER}], extra options - [${POSTGRES_EXTRA_OPTS}]."
+echo "Backing up [${POSTGRES_USER}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}] to\
+ [${S3_ENDPOINT}], extra opts - [${POSTGRES_EXTRA_OPTS}]."
 
 pg_dump --username="${POSTGRES_USER}" \
         --host="${POSTGRES_HOST}" \
@@ -25,8 +20,16 @@ pg_dump --username="${POSTGRES_USER}" \
         > "${POSTGRES_DB}".sql
 
 # Declaring variables for informational purposes
+if [[ ${S3_OBJECT_PATH} != "**None**" ]]; then
+  relative_s3_dir_path="${S3_OBJECT_PATH}"
+else
+  # Will be name of directory in backet yyyy-mm-dd_HH:MM:SS
+  timestamp="$(date +%F_%T)"
+
+  relative_s3_dir_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}"
+fi
+
 ARCHIVE_FILE_NAME="${POSTGRES_DB}.tar.gz"
-relative_s3_dir_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}"
 relative_s3_object_path="${relative_s3_dir_path}/${ARCHIVE_FILE_NAME}"
 FULL_S3_DIR_PATH="${S3_ENDPOINT}/${relative_s3_dir_path}"
 
