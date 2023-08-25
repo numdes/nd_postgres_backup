@@ -42,10 +42,10 @@ ENV POSTGRES_DB="**None**" \
     S3_SECRET_KEY="**None**" \
     S3_BUCKET="**None**" \
     S3_ENDPOINT="**None**" \
+    S3_OBJECT_PATH="**None**"
 
-
-COPY backup.sh /backup.sh
-COPY init_script.sh /init_script.sh
+COPY backup.sh /
+COPY init_script.sh /
 
 COPY hooks /hooks
 
