@@ -22,7 +22,7 @@ docker run --rm -it \
     -e POSTGRES_USER="DB-USER" \
     -e POSTGRES_PASSWORD="PASS" \
     -e S3_ENDPOINT=http://YOUR-S3 \
-    -e S3_ACCESS_KEY_ID="KEY-ID" \
+    -e S3_ACCESS_KEY="KEY-ID" \
     -e S3_SECRET_KEY="KEY-SECRET" \
     -e S3_BUCKET="BUCKET-NAME" \
     -e PRIVATE_NOTIFICATION_URL=http://webhook \
@@ -45,7 +45,7 @@ docker run -d \
     -e POSTGRES_USER="DB-USER" \
     -e POSTGRES_PASSWORD="PASS" \
     -e S3_ENDPOINT=http://YOUR-S3 \
-    -e S3_ACCESS_KEY_ID="KEY-ID" \
+    -e S3_ACCESS_KEY="KEY-ID" \
     -e S3_SECRET_KEY="KEY-SECRET" \
     -e S3_BUCKET="BUCKET-NAME" \
     -e PRIVATE_NOTIFICATION_URL=http://webhook \
@@ -81,8 +81,8 @@ docker run -d \
 | POSTGRES_EXTRA_OPTS    | --blobs    |   -  | Extra options `pg_dump` run                    |
 | SCHEDULE               | @daily     |   -  | `go-cron` schedule. See [this](#backup-using-go-cron) |
 | HEALTHCHECK_PORT       | 8080       |   -  | Port listening for cron-schedule health check. |
-| S3_ACCESS_KEY_ID       |  -         |   YES  | Key or username with RW access to bucket       |
-| S3_SECRET_KEY   |  -         |   YES  | Secret or password for `S3_ACCESS_KEY_ID`      |
+| S3_ACCESS_KEY       |  -         |   YES  | Key or username with RW access to bucket       |
+| S3_SECRET_KEY   |  -         |   YES  | Secret or password for `S3_ACCESS_KEY`      |
 | S3_BUCKET              |  -         |   YES  | Name of bucket created for backups             |
 | S3_ENDPOINT            |  -         |   YES  | URL of S3 storage                              |
 
