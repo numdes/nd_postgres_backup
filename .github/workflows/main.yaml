@@ -2,16 +2,16 @@ name: Docker Image CI
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'main'
-      - 'master'
+#  push:
+#    branches:
+#      - 'main'
+#      - 'master'
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - 'main'
-      - 'master'
+#  pull_request:
+#    branches:
+#      - 'main'
+#      - 'master'
 
 env:
   REGISTRY: docker.io
@@ -39,6 +39,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: numdes/nd_postgres_backup
+
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
@@ -47,15 +53,8 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            numdes/nd_postgres_backup:0.1.0
-            numdes/nd_postgres_backup:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-#
-#      - name: Update repo description
-#        uses: peter-evans/dockerhub-description@v3
-#        with:
-#          username: ${{ secrets.DOCKERHUB_USERNAME }}
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#          repository: user/app
+
