@@ -24,9 +24,7 @@ docker run --rm \
     --env S3_ACCESS_KEY="access-key" \
     --env S3_SECRET_KEY="secret-key" \
     --env S3_BUCKET="BUCKET-NAME" \
-    --entrypoint '' \
-    numdes/nd_postgres_backup:v0.2.1 \
-    /bin/bash -c "./backup.sh"
+    numdes/nd_postgres_backup:v0.2.2
 ```
 It will backup given Postgres DB and upload it to S3 bucket.
 
