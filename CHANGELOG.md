@@ -18,7 +18,7 @@ Stub:
 
 # nd_postgres_backup
 
-## [0.2.1] - 2023-08-25
+## [0.2.0] - 2023-08-25
 - refactoring and verification
 ### Braking changes
 - Renamed:
