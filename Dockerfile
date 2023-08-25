@@ -16,12 +16,19 @@ RUN apt-get update \
     postgresql-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && curl --fail --retry 4 --retry-all-errors -o /usr/local/bin/go-cron.gz -L https://github.com/prodrigestivill/go-cron/releases/download/$GOCRONVER/go-cron-linux-amd64.gz \
-    && gzip -vnd /usr/local/bin/go-cron.gz && chmod a+x /usr/local/bin/go-cron
+    && curl --fail \
+        --retry 4 \
+        --retry-all-errors \
+        --output /usr/local/bin/go-cron.gz \
+        --location https://github.com/prodrigestivill/go-cron/releases/download/$GOCRONVER/go-cron-linux-amd64.gz \
+    && gzip --verbose \
+          --no-name \
+          --decompress /usr/local/bin/go-cron.gz \
+    && chmod a+x /usr/local/bin/go-cron
 
 RUN curl --location --output /usr/local/bin/mcli "https://dl.min.io/client/mc/release/linux-amd64/mc" && \
     chmod +x /usr/local/bin/mcli
-RUN mcli -v
+RUN mcli --version
 
 ENV POSTGRES_DB="**None**" \
     POSTGRES_HOST="**None**" \
@@ -31,8 +38,8 @@ ENV POSTGRES_DB="**None**" \
     POSTGRES_EXTRA_OPTS="--blobs" \
     SCHEDULE="@daily" \
     HEALTHCHECK_PORT=8080 \
-    S3_ACCESS_KEY_ID="**None**" \
-    S3_SECRET_ACCESS_KEY="**None**" \
+    S3_ACCESS_KEY="**None**" \
+    S3_SECRET_KEY="**None**" \
     S3_BUCKET="**None**" \
     S3_ENDPOINT="**None**"
 

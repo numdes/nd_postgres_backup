@@ -18,6 +18,13 @@ Stub:
 
 # nd_postgres_backup
 
+## [0.2.0] - 2023-08-25
+- refactoring and verification
+### Braking changes
+- Renamed:
+  - `S3_ACCESS_KEY_ID` -> `S3_ACCESS_KEY`
+  - `S3_SECRET_ACCESS_KEY` -> `S3_SECRET_KEY`
+
 ## [0.1.0] - 2023-08-03
 - Backup Postgres DB
 - Send back up to S3

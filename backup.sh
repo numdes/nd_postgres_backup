@@ -43,7 +43,7 @@ ARCHIVE_FILE_SIZE="$(ls -lh "${ARCHIVE_FILE_NAME}" | awk '{print $5}')"
 echo "Created ${ARCHIVE_FILE_NAME} with file size: ${ARCHIVE_FILE_SIZE}"
 
 # Set S3 connection configuration
-mcli alias set backup "${S3_ENDPOINT}" "${S3_ACCESS_KEY_ID}" "${S3_SECRET_ACCESS_KEY}"
+mcli alias set backup "${S3_ENDPOINT}" "${S3_ACCESS_KEY_ID}" "${S3_SECRET_KEY}"
 
 echo "Starting to copy ${ARCHIVE_FILE_NAME} to ${FULL_S3_DIR_PATH}..."
 
