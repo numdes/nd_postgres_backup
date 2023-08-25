@@ -17,8 +17,14 @@ if [[ ${S3_ACCESS_KEY} == "**None**" ]] ||
    [[ ${POSTGRES_PASSWORD} == "**None**" ]]; then
   echo "One or more mandatory values is missing. Check your configuration..." >&2
   exit 1
-else
-# Will create base backup
-  echo "All needed variables seems set. Starting main procedure"
-  exec /usr/local/bin/go-cron -s $SCHEDULE -p $HEALTHCHECK_PORT -- /backup.sh
 fi
+
+# check if $SCEDULE is set
+if [[ ${SCHEDULE} == "**None**" ]]; then
+  echo "Schedule is not set. Let's make backup and leave..."
+  exec /backup.sh
+  exit 0
+fi
+
+echo "Run backup with schedule: $SCHEDULE"
+exec /usr/local/bin/go-cron -s $SCHEDULE -p $HEALTHCHECK_PORT -- /backup.sh

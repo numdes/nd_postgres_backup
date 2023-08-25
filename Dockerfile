@@ -36,7 +36,7 @@ ENV POSTGRES_DB="**None**" \
     POSTGRES_USER="**None**" \
     POSTGRES_PASSWORD="**None**" \
     POSTGRES_EXTRA_OPTS="--blobs" \
-    SCHEDULE="@daily" \
+    SCHEDULE="**None**" \
     HEALTHCHECK_PORT=8080 \
     S3_ACCESS_KEY="**None**" \
     S3_SECRET_KEY="**None**" \
@@ -45,12 +45,12 @@ ENV POSTGRES_DB="**None**" \
     S3_OBJECT_PATH="**None**"
 
 COPY backup.sh /
-COPY init_script.sh /
+COPY docker-entrypoint.sh /
 
 COPY hooks /hooks
 
-ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["./init_script.sh"]
-
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f "http://localhost:$HEALTHCHECK_PORT/" || exit 1
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+

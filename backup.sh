@@ -21,17 +21,17 @@ pg_dump --username="${POSTGRES_USER}" \
 
 # Declaring variables for informational purposes
 if [[ ${S3_OBJECT_PATH} != "**None**" ]]; then
-  relative_s3_dir_path="${S3_OBJECT_PATH}"
+  ARCHIVE_FILE_NAME=$(basename "${S3_OBJECT_PATH}")
+  relative_s3_object_path="${S3_OBJECT_PATH}"
 else
   # Will be name of directory in backet yyyy-mm-dd_HH:MM:SS
   timestamp="$(date +%F_%T)"
 
-  relative_s3_dir_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}"
+  ARCHIVE_FILE_NAME="${POSTGRES_DB}.tar.gz"
+  relative_s3_object_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}/${ARCHIVE_FILE_NAME}"
 fi
 
-ARCHIVE_FILE_NAME="${POSTGRES_DB}.tar.gz"
-relative_s3_object_path="${relative_s3_dir_path}/${ARCHIVE_FILE_NAME}"
-FULL_S3_DIR_PATH="${S3_ENDPOINT}/${relative_s3_dir_path}"
+FULL_S3_DIR_PATH="${S3_ENDPOINT}/${relative_s3_object_path}"
 
 # Do compression
 tar --create \
