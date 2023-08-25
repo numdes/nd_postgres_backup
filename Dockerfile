@@ -37,10 +37,7 @@ ENV POSTGRES_DB="**None**" \
     S3_ENDPOINT="**None**"
 
 COPY backup.sh /backup.sh
-RUN chmod +x backup.sh
-
 COPY init_script.sh /init_script.sh
-RUN chmod +x init_script.sh
 
 COPY hooks /hooks
 
