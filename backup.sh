@@ -1,22 +1,17 @@
 #!/usr/bin/env bash
 #
-# Script made for backup PostgreSQL database from local (${POSTGRES_HOST}=127.0.0.1)
-# or remote host. Created backup stores in S3 storage. On completion script calls
-# notification scripts from hooks/ directory to send report to given Telegram Chat
-# based on variables set private or public notification method will be selected 
+# Script for backing up PostgreSQL database and upload backup to S3.
+# After backup is done, script optionally can send notification to Telegram chat or to private URL
 
 set -euo pipefail
 IFS=$'\n\t'
 
-# Will be name of directory in backet yyyy-mm-dd_HH:MM:SS
-timestamp="$(date +%F_%T)"
-
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
 # Will create base backup
-echo "Creating backup of ${POSTGRES_DB} database. From ${POSTGRES_HOST} and port \
-is ${POSTGRES_PORT}. Username: ${POSTGRES_USER}. With following extra options: \
-${POSTGRES_EXTRA_OPTS}"
+echo "Backing up [${POSTGRES_USER}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}] to\
+ [${S3_ENDPOINT}], extra opts - [${POSTGRES_EXTRA_OPTS}]."
+
 pg_dump --username="${POSTGRES_USER}" \
         --host="${POSTGRES_HOST}" \
         --port="${POSTGRES_PORT}" \
@@ -25,38 +20,49 @@ pg_dump --username="${POSTGRES_USER}" \
         > "${POSTGRES_DB}".sql
 
 # Declaring variables for informational purposes
-copy_file_name="${POSTGRES_DB}.tar.gz"
-copy_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}"
-mcli_copy_path="${copy_path}/${copy_file_name}"
-info_copy_path="${S3_ENDPOINT}/${copy_path}"
+if [[ ${S3_OBJECT_PATH} != "**None**" ]]; then
+  ARCHIVE_FILE_NAME=$(basename "${S3_OBJECT_PATH}")
+  relative_s3_object_path="${S3_OBJECT_PATH}"
+else
+  # Will be name of directory in backet yyyy-mm-dd_HH:MM:SS
+  timestamp="$(date +%F_%T)"
+
+  ARCHIVE_FILE_NAME="${POSTGRES_DB}.tar.gz"
+  relative_s3_object_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}/${ARCHIVE_FILE_NAME}"
+fi
+
+FULL_S3_DIR_PATH="${S3_ENDPOINT}/${relative_s3_object_path}"
 
 # Do compression
 tar --create \
     --gzip \
     --verbose \
-    --file "${copy_file_name}" \
+    --file "${ARCHIVE_FILE_NAME}" \
     "${POSTGRES_DB}.sql"
 
 # Count file size
-send_file_size="$(ls -lh "${copy_file_name}" | awk '{print $5}')"
+ARCHIVE_FILE_SIZE="$(ls -lh "${ARCHIVE_FILE_NAME}" | awk '{print $5}')"
 
-echo "Created ${copy_file_name} with file size: ${send_file_size}"
+echo "Created ${ARCHIVE_FILE_NAME} with file size: ${ARCHIVE_FILE_SIZE}"
 
 # Set S3 connection configuration
-mcli alias set backup "${S3_ENDPOINT}" "${S3_ACCESS_KEY_ID}" "${S3_SECRET_ACCESS_KEY}"
+mcli alias set backup "${S3_ENDPOINT}" "${S3_ACCESS_KEY}" "${S3_SECRET_KEY}"
 
-echo "Starting to copy ${copy_file_name} to ${info_copy_path}..."
+echo "Starting to copy ${ARCHIVE_FILE_NAME} to ${FULL_S3_DIR_PATH}..."
 
 # Copying backup to S3
-mcli cp "${copy_file_name}" backup/"${mcli_copy_path}"
+mcli cp "${ARCHIVE_FILE_NAME}" backup/"${relative_s3_object_path}"
 
-# Do nettoyage
+# Do clean up
 echo "Maid is here... Doing cleaning..."
 rm --force "${POSTGRES_DB}".*
 
-# Do anounce
+# Do announce
+export ARCHIVE_FILE_NAME
+export ARCHIVE_FILE_SIZE
+export FULL_S3_DIR_PATH
 run-parts --reverse \
-          --arg "${copy_file_name}" \
-          --arg "${send_file_size}" \
-          --arg "${info_copy_path}" \
+          --arg "${ARCHIVE_FILE_NAME}" \
+          --arg "${ARCHIVE_FILE_SIZE}" \
+          --arg "${FULL_S3_DIR_PATH}" \
           /hooks

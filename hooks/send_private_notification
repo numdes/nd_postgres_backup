@@ -5,12 +5,8 @@
 set -eo pipefail
 IFS=$'\n\t'
 
-copy_file_name="${1}"
-send_file_size="${2}"
-info_copy_path="${3}"
-
-message_text="Backed up ${copy_file_name} with file size: ${send_file_size} \
-to ${info_copy_path}"
+message_text="Backed up ${ARCHIVE_FILE_NAME} with file size: ${ARCHIVE_FILE_SIZE} \
+to ${FULL_S3_DIR_PATH}"
 
 if [[ -n "${PRIVATE_NOTIFICATION_URL}" ]]; then
     curl -XPOST \
