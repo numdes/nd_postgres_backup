@@ -2,7 +2,7 @@
 
 ## Description
 
-Image created to automate backing up procedure of PostgreSQL databases, store them to S3 Object storage and implement retention of stored archives with `Grandfather-father-son` backup rotation [scheme] (https://en.wikipedia.org/wiki/Backup_rotation_scheme#:~:text=Grandfather%2Dfather%2Dson%20backup%20(,as%20daily%2C%20weekly%20and%20monthly.).     
+Image created to automate backing up procedure of PostgreSQL databases, store them to S3 Object storage and implement retention of stored archives with `Grandfather-father-son` backup rotation [scheme](https://en.wikipedia.org/wiki/Backup_rotation_scheme).     
 It is also possible to use this container to create a single backup of specific DB. Set full S3 path (e.g `bucket_name/project_name/stage_branch/database_name.tar.gz`) as the value of variable `S3_OBJECT_PATH`  to execute single backup  
 
 ## Usage
@@ -13,17 +13,17 @@ To run container as a standalone backuaper, to backup cloud SaaS or bare-metal d
 ```shell
 docker run -d --rm \
     --env POSTGRES_HOST="DB_IP_OR_HOSTNAME" \
-    --env POSTGRES_DB=DB_NAME \
-    --env POSTGRES_USER=DB_USERNAME \
-    --env POSTGRES_PORT=NON_DEFAULT_PORT \
-    --env POSTGRES_PASSWORD=DB_USERNAME_PASSWORD \
-    --env NOTIFICATION_SERVER_URL=ONLY_SET_IF_PRIVATE_TELEGRAM_BOT_USED \
-    --env TELEGRAM_CHAT_ID=PRIVATE_OR_TELEGRAM_BOT_ID \
-    --env S3_ENDPOINT=S3_API_URL \
-    --env S3_ACCESS_KEY=S3_ACCESS_KEY \
-    --env S3_SECRET_KEY=S3_SECERT_KEY \
-    --env S3_BUCKET=S3_BUCKET_NAME(+POSSIBLE_PATH_DEEPER) \
-    --env S3_ALIAS=S3_CONFIG_SET_ALIAS \
+    --env POSTGRES_DB="DB_NAME" \
+    --env POSTGRES_USER="DB_USERNAME" \
+    --env POSTGRES_PORT="NON_DEFAULT_PORT" \
+    --env POSTGRES_PASSWORD="DB_USERNAME_PASSWORD" \
+    --env NOTIFICATION_SERVER_URL="ONLY_SET_IF_PRIVATE_TELEGRAM_BOT_USED" \
+    --env TELEGRAM_CHAT_ID="PRIVATE_OR_TELEGRAM_BOT_ID" \
+    --env S3_ENDPOINT="S3_API_URL" \
+    --env S3_ACCESS_KEY="S3_ACCESS_KEY" \
+    --env S3_SECRET_KEY="S3_SECERT_KEY" \
+    --env S3_BUCKET="S3_BUCKET_NAME(+POSSIBLE_PATH_DEEPER)" \
+    --env S3_ALIAS="S3_CONFIG_SET_ALIAS" \
     numdes/nd_postgres_backup:v0.3.0
 ```
 
