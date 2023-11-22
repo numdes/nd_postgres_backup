@@ -35,7 +35,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: numdes/nd_postgres_backup
+          images: siameseoriental/nd_postgres_backup
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
