@@ -50,3 +50,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: siameseoriental/nd_postgres_backup

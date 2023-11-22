@@ -1,114 +1,69 @@
-# nd_postgres_backup
+# PostgreSQL Backup to S3 and retention container
 
-Docker image for universal postgres backups
+## Description
 
-# Roadmap
+Image created to automate backing up procedure of PostgreSQL databases, store them to S3 Object storage and implement retention of stored archives with `Grandfather-father-son` backup rotation [scheme] (https://en.wikipedia.org/wiki/Backup_rotation_scheme#:~:text=Grandfather%2Dfather%2Dson%20backup%20(,as%20daily%2C%20weekly%20and%20monthly.).     
+It is also possible to use this container to create a single backup of specific DB. Set full S3 path (e.g `bucket_name/project_name/stage_branch/database_name.tar.gz`) as the value of variable `S3_OBJECT_PATH`  to execute single backup  
 
-- [X] Add support for S3
-- [X] Add CI/CD to publish image to DockerHub
-- [ ] Add retention policy settings by env vars
-- [X] Notify about backup status by HTTP-request
-- [ ] Add docker-compose example
+## Usage
 
-# Usage
-
-## Backup manually:
-Use next command if you need to backup DB manually:
-```shell
-docker run --rm \
-    --env POSTGRES_HOST="FQDN-OR-IP" \
-    --env POSTGRES_DB="DB-NAME" \
-    --env POSTGRES_USER="DB-USER" \
-    --env POSTGRES_PASSWORD="PASS" \
-    --env S3_ENDPOINT=https://YOUR-S3 \
-    --env S3_ACCESS_KEY="access-key" \
-    --env S3_SECRET_KEY="secret-key" \
-    --env S3_BUCKET="BUCKET-NAME" \
-    numdes/nd_postgres_backup:v0.2.2
-```
-It will backup given Postgres DB and upload it to S3 bucket.
-
-## Backup using `go-cron`
+Key idea of usage was to add this container as a service to `docker-compose.yml` manifest alongside with PostgreSQL database container. See `compose-example/docker-compose.yml`.    
+To run container as a standalone backuaper, to backup cloud SaaS or bare-metal deployed PostgreSQL, for example use following command:
 
 ```shell
-docker run --detach \
-    --env POSTGRES_HOST="FQDN-OR-IP" \
-    --env POSTGRES_DB="DB-NAME" \
-    --env POSTGRES_USER="DB-USER" \
-    --env POSTGRES_PASSWORD="PASS" \
-    --env S3_ENDPOINT=http://YOUR-S3 \
-    --env S3_ACCESS_KEY="KEY-ID" \
-    --env S3_SECRET_KEY="KEY-SECRET" \
-    --env S3_BUCKET="BUCKET-NAME" \
-    --env PRIVATE_NOTIFICATION_URL=http://webhook \
-    --env TELEGRAM_CHAT_ID=point_to_notify_group \
-    --env POSTGRES_PORT=if_not_5432 \
-    --env SCHEDULE=Chosen_schedule \
-    numdes/nd_postgres_backup:v0.2.1
+docker run -d --rm \
+    --env POSTGRES_HOST="DB_IP_OR_HOSTNAME" \
+    --env POSTGRES_DB=DB_NAME \
+    --env POSTGRES_USER=DB_USERNAME \
+    --env POSTGRES_PORT=NON_DEFAULT_PORT \
+    --env POSTGRES_PASSWORD=DB_USERNAME_PASSWORD \
+    --env NOTIFICATION_SERVER_URL=ONLY_SET_IF_PRIVATE_TELEGRAM_BOT_USED \
+    --env TELEGRAM_CHAT_ID=PRIVATE_OR_TELEGRAM_BOT_ID \
+    --env S3_ENDPOINT=S3_API_URL \
+    --env S3_ACCESS_KEY=S3_ACCESS_KEY \
+    --env S3_SECRET_KEY=S3_SECERT_KEY \
+    --env S3_BUCKET=S3_BUCKET_NAME(+POSSIBLE_PATH_DEEPER) \
+    --env S3_ALIAS=S3_CONFIG_SET_ALIAS \
+    numdes/nd_postgres_backup:v0.3.0
 ```
 
-:wave: By default `SCHEDULE` variable is set to `@daily` in case if you need other scheduling options, please refer
-to `go-cron` *[Documentation](https://pkg.go.dev/github.com/robfig/cron?utm_source=godoc#hdr-Predefined_schedules)*.
+## Backup strategy
 
-## Variables
+By default set to make backup every hour, plus one separate backup a day, plus one separate backup a week
 
-### `Gitlab Actions`
-*[variables](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository)*:
+Schedule can be tuned or changed by editing of `crontab` file
 
-| Name               | Description                 |
-|--------------------|-----------------------------|
-| DOCKERHUB_LOGIN    | `Actions` Repository secret |
-| DOCKERHUB_PASSWORD | `Actions` Repository secret |
+## Retention strategy
 
-### Notification environmental variables
+Maximum depth of storage for each type of backup can be tuned by changing values of these variables:
 
-| Name                     | Description                             |
-|--------------------------|-----------------------------------------|
-| TELEGRAM_CHAT_ID         | Notifying group                         |
-| PRIVATE_NOTIFICATION_URL | Private notifier URL                    |
-| TELEGRAM_BOT_TOKEN       | Only used to call Telegram's public API |
+- `WEEKLY_BACKUP_LIMIT`
+- `DAILY_BACKUP_LIMIT`
+- `HOURLY_BACKUP_LIMIT`
 
-### Environmental variables
+Schedule of retention script (`retention.sh`) execution can be edited in `crontab` file 
 
-| Name                | Default value | Is mandatory | Description                                                               |
-|---------------------|:--------------|:------------:|---------------------------------------------------------------------------|
-| POSTGRES_DB         | -             |     YES      | Database name                                                             |
-| POSTGRES_HOST       | -             |     YES      | PostgreSQL IP address or hostname                                         |
-| POSTGRES_PORT       | 5432          |      -       | Connection TCP port                                                       |
-| POSTGRES_USER       | -             |     YES      | Database user                                                             |
-| POSTGRES_PASSWORD   | -             |     YES      | Database user password                                                    |
-| POSTGRES_EXTRA_OPTS | --blobs       |      -       | Extra options `pg_dump` run                                               |
-| SCHEDULE            | @daily        |      -       | `go-cron` schedule. See [this](#backup-using-go-cron)                     |
-| HEALTHCHECK_PORT    | 8080          |      -       | Port listening for cron-schedule health check.                            |
-| S3_ACCESS_KEY       | -             |     YES      | Key or username with RW access to bucket                                  |
-| S3_SECRET_KEY       | -             |     YES      | Secret or password for `S3_ACCESS_KEY`                                    |
-| S3_BUCKET           | -             |     YES      | Name of S3 bucket                                                         |
-| S3_ENDPOINT         | -             |     YES      | URL of S3 storage                                                         |
-| S3_OBJECT_PATH      | -             |      NO      | Full path to archive including bucket name and desired file name. If not present will be generated automatically |
+## Variables list
 
-### Notification selection
-
-It is possible to use either private Telegram bot if you have it or Telegram public API.
-
-In scenario with private bot `PRIVATE_NOTIFICATION_URL` must be set alongside with `TELEGRAM_CHAT_ID`.
-
-In scenario with Telegram's public API `TELEGRAM_BOT_TOKEN` must be set as it is
-received (`Use this token to access the HTTP API:`) from `@BotFather` Telegram Bot. Variable `TELEGRAM_CHAT_ID` must be
-a proper Telegram ID of bot
-
-In `docker ...` command need to replace:
-
-```
-    --env PRIVATE_NOTIFICATION_URL=http://webhook \
-    --env TELEGRAM_CHAT_ID=point_to_notify_group \
-```
-
-to
-
-```
-    --env TELEGRAM_BOT_TOKEN='XXXXXXX:XXXXxxxxXXXXxxx' \
-    --env TELEGRAM_CHAT_ID=000000000 \
-```
-
-- If `TELEGRAM_CHAT_ID` has a proper format (Only digits not less than 5 not more than 32) and `TELEGRAM_BOT_TOKEN` is
-  set, script will try to send notification through Telegram's public API.
+| Имя                       | Занчение по умолчанию | Обязательное | Описание                                                               |
+|---------------------------|:-------------:|:-------------:|---------------------------------------------------------------------------|
+| HOURLY_BACKUP_PATH        | `hourly`      |     NO        | Path suffix to hourly-made backups storage |
+| DAILY_BACKUP_PATH         | `daily`       |     NO        | Path suffix to daily-made backups storage|
+| WEEKLY_BACKUP_PATH        | `weekly`      |     NO        | Path suffix to weekly-made backups storage|
+| WEEKLY_BACKUP_LIMIT       | `5`           |     NO        | Max number of weekly backups      |
+| DAILY_BACKUP_LIMIT        | `10`          |     NO        | Max number of daily backups       |
+| HOURLY_BACKUP_LIMIT       | `25`          |     NO        | Max number of hourly backups      |
+| S3_ACCESS_KEY             | -             |     YES       | ${S3_BUCKET} READ-WRITE S3 ACCESS KEY |
+| S3_SECRET_KEY             | -             |     YES       | ${S3_BUCKET} READ-WRITE S3 ACCESS SECRET  |
+| S3_ENDPOINT               | -             |     YES       | S3 API URL |
+| S3_BUCKET                 | -             |     YES       | Path to hourly, daily, weekly directories will be. Including bucket name        |
+| S3_OBJECT_PATH            | -             |     NO        | Optional variable to use single backup [functionality](#description) |
+| POSTGRES_DB               | -             |     YES       | PostgreSQL database name                                                            |
+| POSTGRES_HOST             | `db`          |     NO        | PostgreSQL IP or host name                                        |
+| POSTGRES_PORT             | `5432`        |     NO        | TCP connection port                                                  |
+| POSTGRES_USER             | -             |     YES       | DB usermane                                                            |
+| POSTGRES_PASSWORD         | -             |     YES       | DB username password                                                    |
+| POSTGRES_EXTRA_OPTS       | `--blobs`     |     NO        | `pg_dump` extra options |
+| NOTIFICATION_SERVER_URL   | -             |     NO        | URL of private telegram bot                                                            |
+| TELEGRAM_CHAT_ID          | -             |     NO        | Custom bot ID or Telegram Bot ID when bot created using `@botfather`                                                   |
+| TELEGRAM_BOT_TOKEN        | -             |     NO        | Created by `@botfather` bot security token  |
