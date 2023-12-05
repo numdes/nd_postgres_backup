@@ -45,7 +45,7 @@ Schedule of retention script (`retention.sh`) execution can be edited in `cronta
 
 ## Variables list
 
-| Имя                       | Занчение по умолчанию | Обязательное | Описание                                                               |
+| Variable Name             | Default Value | Is Mandatory? | Description                                                               |
 |---------------------------|:-------------:|:-------------:|---------------------------------------------------------------------------|
 | HOURLY_BACKUP_PATH        | `hourly`      |     NO        | Path suffix to hourly-made backups storage |
 | DAILY_BACKUP_PATH         | `daily`       |     NO        | Path suffix to daily-made backups storage|
