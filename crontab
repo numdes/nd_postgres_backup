@@ -1,0 +1,6 @@
+PATH=/usr/bin:/bin:/usr/local/bin/
+SHELL=/bin/bash
+0 * * * * source /script/.env; /script/backup.sh ${HOURLY_BACKUP_PATH} >> /var/log/cron.log 2>&1
+0 1 * * * source /script/.env; /script/backup.sh ${DAILY_BACKUP_PATH} >> /var/log/cron.log 2>&1
+0 1 * * 0 source /script/.env; /script/backup.sh ${WEEKLY_BACKUP_PATH} >> /var/log/cron.log 2>&1
+0 2 * * * source /script/.env; /script/retention.sh >> /var/log/cron.log 2>&1
