@@ -19,7 +19,7 @@ retention_func() {
 
   local backup_path="$1"
   local backup_limit="$2"
-# Here we are getting json-formed data from S3 and conveying to JQ
+# Here we are getting json-formed data from S3 and convey it to JQ
 # where we are sorting and selecting all backup directories except given last ones
 # How many backups should remain decides $backup_limit variable.
 # Each backup suitable for deletion conveys through `xargs` line for removal

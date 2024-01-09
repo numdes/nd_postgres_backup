@@ -12,6 +12,7 @@ if [[ ${S3_ACCESS_KEY} == "**None**" ]] ||
    [[ ${S3_ENDPOINT} == "**None**" ]] ||
    [[ ${POSTGRES_DB} == "**None**" ]] ||
    [[ ${POSTGRES_USER} == "**None**" ]] ||
+   [[ ${POSTGRES_HOST} == "**None**" ]] ||
    [[ ${POSTGRES_PASSWORD} == "**None**" ]]; then
   echo "One or more mandatory values is missing. Check your configuration..." >&2
   exit 1

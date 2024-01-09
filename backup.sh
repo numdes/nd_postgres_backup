@@ -6,7 +6,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# Check if we have got path argument from scheduler if not set path to /
+# Check if we have gotten path argument from scheduler if not set path to /
 if [[ -z "$1" ]]; then
   backup_path=""
 elif  [[ ! "$1" == */ ]]; then
@@ -66,7 +66,8 @@ mcli cp "${ARCHIVE_FILE_NAME}" "${S3_ALIAS}"/"${relative_s3_object_path}"
 echo "Maid is here... Doing cleaning..."
 rm --force "${POSTGRES_DB}".*
 
-# # Do announce
+# Do announce
+# We are not going to spam chat every hour. Excluded hourly backups from notifications
 if [[ ! ${backup_path} =~ ^hourly.? ]]; then
   echo "Starting notification routine..."
 # Check which backup routine applied  

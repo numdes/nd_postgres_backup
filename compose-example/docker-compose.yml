@@ -21,9 +21,4 @@ services:
     depends_on:
       - db
 
-  redis:
-    image: redis:7
-
-  web:
-    image: ........
-
+# docker-compoe.yml continues ...
