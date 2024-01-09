@@ -18,6 +18,34 @@ Stub:
 
 # nd_postgres_backup
 
+## [0.3.0] - 2024-01-09
+
+### Added
+
+- Add publish decription to Docker Hub from README.md 
+- Add jq to container build 
+- Add abilty to change alias for S3 connection. Variable `S3_ALIAS`
+- Add docker-compose [example](compose-example/docker-compose.yml)
+- Add `crontab` file for managing schedule
+- Add retention functionallity 
+
+### Removed
+
+- Remove Go-Cron, replace it with standard cron
+- Cut notifications for hourly backups
+
+### Changed
+
+- Replace manual backup routine logic. To start manual backup run container without S3_BUCKET variable. See [README](README.md)
+- Change S3 storage directory from `${S3_BUCKET}/${POSTGRES_DB}` to `${S3_BUCKET}/${backup_path}`
+- Rename notification scripts. Add `.sh` extention
+
+
+### Braking changes
+- Removed:
+  - `SCHEDULE` - variable was used by Go-Cron
+  - `HEALTHCHECK_PORT` - variable was used by Go-Cron
+
 ## [0.2.2] - 2023-08-25
 - Make docker-entrypoint.sh to easy manual run
 - Fix bug with `S3_OBJECT_PATH` var

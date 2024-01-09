@@ -5,12 +5,12 @@
 set -eo pipefail
 IFS=$'\n\t'
 
-message_text="Backed up ${ARCHIVE_FILE_NAME} with file size: ${ARCHIVE_FILE_SIZE} \
-to ${FULL_S3_DIR_PATH}"
+message_text="Backed up ${BACKUP_SCHEDULE} dump ${ARCHIVE_FILE_NAME}. \
+File size: ${ARCHIVE_FILE_SIZE}. To ${FULL_S3_DIR_PATH}"
 
-if [[ -n "${PRIVATE_NOTIFICATION_URL}" ]]; then
+if [[ "${NOTIFICATION_SERVER_URL}" != "**None**" ]]; then
     curl -XPOST \
-      --url "${PRIVATE_NOTIFICATION_URL}" \
+      --url "${NOTIFICATION_SERVER_URL}" \
       --header 'Content-Type: application/json' \
       --data "{\"key\": \"${TELEGRAM_CHAT_ID}\", \"text\": \"${message_text}\"}" \
       --max-time 10 \

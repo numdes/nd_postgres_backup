@@ -6,6 +6,15 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Check if we have gotten path argument from scheduler if not set path to /
+if [[ -z "$1" ]]; then
+  backup_path=""
+elif  [[ ! "$1" == */ ]]; then
+  backup_path="$1/"
+else
+  backup_path="$1"
+fi
+
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
 # Will create base backup
@@ -28,7 +37,7 @@ else
   timestamp="$(date +%F_%T)"
 
   ARCHIVE_FILE_NAME="${POSTGRES_DB}.tar.gz"
-  relative_s3_object_path="${S3_BUCKET}/${POSTGRES_DB}/${timestamp}/${ARCHIVE_FILE_NAME}"
+  relative_s3_object_path="${S3_BUCKET}/${backup_path}${timestamp}/${ARCHIVE_FILE_NAME}"
 fi
 
 FULL_S3_DIR_PATH="${S3_ENDPOINT}/${relative_s3_object_path}"
@@ -45,24 +54,37 @@ ARCHIVE_FILE_SIZE="$(ls -lh "${ARCHIVE_FILE_NAME}" | awk '{print $5}')"
 
 echo "Created ${ARCHIVE_FILE_NAME} with file size: ${ARCHIVE_FILE_SIZE}"
 
-# Set S3 connection configuration
-mcli alias set backup "${S3_ENDPOINT}" "${S3_ACCESS_KEY}" "${S3_SECRET_KEY}"
+# Set an alias for S3 interoperation
+mcli alias set "${S3_ALIAS}" "${S3_ENDPOINT}" "${S3_ACCESS_KEY}" "${S3_SECRET_KEY}"
 
 echo "Starting to copy ${ARCHIVE_FILE_NAME} to ${FULL_S3_DIR_PATH}..."
 
 # Copying backup to S3
-mcli cp "${ARCHIVE_FILE_NAME}" backup/"${relative_s3_object_path}"
+mcli cp "${ARCHIVE_FILE_NAME}" "${S3_ALIAS}"/"${relative_s3_object_path}"
 
 # Do clean up
 echo "Maid is here... Doing cleaning..."
 rm --force "${POSTGRES_DB}".*
 
 # Do announce
-export ARCHIVE_FILE_NAME
-export ARCHIVE_FILE_SIZE
-export FULL_S3_DIR_PATH
-run-parts --reverse \
-          --arg "${ARCHIVE_FILE_NAME}" \
-          --arg "${ARCHIVE_FILE_SIZE}" \
-          --arg "${FULL_S3_DIR_PATH}" \
-          /hooks
+# We are not going to spam chat every hour. Excluded hourly backups from notifications
+if [[ ! ${backup_path} =~ ^hourly.? ]]; then
+  echo "Starting notification routine..."
+# Check which backup routine applied  
+  if [[ ${backup_path} =~ ^daily.? ]]; then
+    BACKUP_SCHEDULE="-=DAILY=-"
+  elif [[ ${backup_path} =~ ^weekly.? ]]; then
+    BACKUP_SCHEDULE="-=WEEKLY=-"
+  else
+    BACKUP_SCHEDULE="-=UNCERTAIN SCHEDULE=-"
+  fi
+# Set variables globally  
+  export ARCHIVE_FILE_NAME
+  export ARCHIVE_FILE_SIZE
+  export FULL_S3_DIR_PATH
+  export BACKUP_SCHEDULE
+# Start execution of notification scripts
+  find /hooks -type f -name '*.sh' -print0 | \
+        sort -z | \
+        xargs -0 -I {} sh -c 'echo "Running: {}" && {}'
+fi

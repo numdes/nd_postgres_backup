@@ -1,0 +1,24 @@
+#######################
+# Example of usage nd_postgres_backup container in docker-compose.yaml
+# All necessary environmental variables set in variables.env file
+#######################
+
+version: '3.8'
+
+services:
+  db:
+    image: numdes/nd_postgis:v0.1.0
+    env_file:
+      - variables.env
+    ports:
+      - ${MASTER_DB_PORT}:5432
+
+  pg_backup:
+    image: numdes/nd_postgres_backup:v0.3.0
+    restart: unless-stopped
+    env_file:
+      - variables.env
+    depends_on:
+      - db
+
+# docker-compoe.yml continues ...
