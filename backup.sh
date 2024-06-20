@@ -17,6 +17,11 @@ fi
 
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
+mkdir --parents $backup_path
+cd $backup_path
+
+echo "Starting $1 backup in $(pwd)"
+
 # Will create base backup
 echo "Backing up [${POSTGRES_USER}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}] to\
  [${S3_ENDPOINT}], extra opts - [${POSTGRES_EXTRA_OPTS}]."
@@ -64,7 +69,8 @@ mcli cp "${ARCHIVE_FILE_NAME}" "${S3_ALIAS}"/"${relative_s3_object_path}"
 
 # Do clean up
 echo "Maid is here... Doing cleaning..."
-rm --force "${POSTGRES_DB}".*
+cd ..
+rm --recursive --force $backup_path
 
 # Do announce
 # We are not going to spam chat every hour. Excluded hourly backups from notifications
