@@ -18,6 +18,17 @@ Stub:
 
 # nd_postgres_backup
 
+## [0.3.2] - 2024-11-01
+
+### Added
+
+- Add monthly backup routine
+- Add disable of hourly backups
+
+### Changed
+
+- Default value for WEEKLY_BACKUP_LIMIT
+
 ## [0.3.0] - 2024-01-09
 
 ### Added

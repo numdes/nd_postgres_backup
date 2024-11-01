@@ -15,6 +15,12 @@ else
   backup_path="$1"
 fi
 
+# Disable hourly backups
+if [[ ${HOURLY_BACKUP_LIMIT} == 0 ]]; then
+  echo "Hourly backups are disabled. Exiting..."
+  exit 0
+fi
+
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
 mkdir --parents $backup_path
@@ -81,6 +87,8 @@ if [[ ! ${backup_path} =~ ^hourly.? ]]; then
     BACKUP_SCHEDULE="-=DAILY=-"
   elif [[ ${backup_path} =~ ^weekly.? ]]; then
     BACKUP_SCHEDULE="-=WEEKLY=-"
+  elif [[ ${backup_path} =~ ^monthly.? ]]; then
+    BACKUP_SCHEDULE="-=MONTHLY=-"
   else
     BACKUP_SCHEDULE="-=UNCERTAIN SCHEDULE=-"
   fi

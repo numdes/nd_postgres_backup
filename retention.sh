@@ -31,8 +31,15 @@ retention_func() {
   xargs -I {} mcli rm --recursive --force "${S3_ALIAS}"/"${S3_BUCKET}"/"${backup_path}"/{}
 }
 
-retention_func ${HOURLY_BACKUP_PATH} ${HOURLY_BACKUP_LIMIT}
+# If the limit for hourly backups is set to 0, then we are not going to delete backups
+if [[ ${HOURLY_BACKUP_LIMIT} -eq 0 ]]; then
+  echo "Retention limits are not set. Check your configuration..." >&2
+else
+  retention_func ${HOURLY_BACKUP_PATH} ${HOURLY_BACKUP_LIMIT}
+fi
 
 retention_func ${DAILY_BACKUP_PATH} ${DAILY_BACKUP_LIMIT}
 
 retention_func ${WEEKLY_BACKUP_PATH} ${WEEKLY_BACKUP_LIMIT}
+
+retention_func ${MONTHLY_BACKUP_PATH} ${MONTHLY_BACKUP_LIMIT}
