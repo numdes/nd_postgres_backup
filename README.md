@@ -32,7 +32,7 @@ docker run -d --rm \
     --env S3_SECRET_KEY="S3_SECERT_KEY" \
     --env S3_BUCKET="S3_BUCKET_NAME(+POSSIBLE_PATH_DEEPER)" \
     --env S3_ALIAS="S3_CONFIG_SET_ALIAS" \
-    numdes/nd_postgres_backup:v0.3.0
+    numdes/nd_postgres_backup:latest
 ```
 
 ### Manual one-time backup without schedule
@@ -53,7 +53,7 @@ docker run -d --rm \
     --env S3_SECRET_KEY="S3_SECERT_KEY" \
     --env S3_OBJECT_PATH="FULL_S3_PATH (e.g `bucket_name/project_name/stage_branch/database_name.tar.gz`)" \
     --env S3_ALIAS="S3_CONFIG_SET_ALIAS" \
-    numdes/nd_postgres_backup:v0.3.0
+    numdes/nd_postgres_backup:latest
 ```
 
 ## Backup strategy
@@ -62,6 +62,11 @@ By default set to make backup every hour, plus one separate backup a day, plus o
 
 Schedule can be tuned or changed by editing of `crontab` file
 
+## Disabling hourly backups
+
+In case if each hour backup procedure is excessive it is possible to switch it off by setting
+variable HOURLY_BACKUP_LIMIT to 0 `$HOURLY_BACKUP_LIMIT=0` 
+
 ## Retention strategy
 
 Maximum depth of storage for each type of backup can be tuned by changing values of these variables:
@@ -69,6 +74,7 @@ Maximum depth of storage for each type of backup can be tuned by changing values
 - `WEEKLY_BACKUP_LIMIT`
 - `DAILY_BACKUP_LIMIT`
 - `HOURLY_BACKUP_LIMIT`
+- `MONTHLY_BACKUP_LIMIT`
 
 Schedule of retention script (`retention.sh`) execution can be edited in `crontab` file 
 
@@ -97,9 +103,11 @@ Schedule of retention script (`retention.sh`) execution can be edited in `cronta
 | HOURLY_BACKUP_PATH        | `hourly`      |     NO        | Path suffix to hourly-made backups storage                           |
 | DAILY_BACKUP_PATH         | `daily`       |     NO        | Path suffix to daily-made backups storage                            |
 | WEEKLY_BACKUP_PATH        | `weekly`      |     NO        | Path suffix to weekly-made backups storage                           |
-| HOURLY_BACKUP_LIMIT       | `25`          |     NO        | Max number of weekly backups                                         |
+| MONTHLY_BACKUP_PATH        | `monthly`      |     NO        | Path suffix to monthly-made backups storage                           |
+| HOURLY_BACKUP_LIMIT       | `25`          |     NO        | Max number of hourly backups                                         |
 | DAILY_BACKUP_LIMIT        | `10`          |     NO        | Max number of daily backups                                          |
-| WEEKLY_BACKUP_LIMIT       | `5`           |     NO        | Max number of hourly backups                                         |
+| WEEKLY_BACKUP_LIMIT       | `16`           |     NO        | Max number of weekly backups                                         |
+| MONTHLY_BACKUP_LIMIT       | `24`           |     NO        | Max number of monthly backups                                         |
 | S3_ACCESS_KEY             | -             |     YES       | ${S3_BUCKET} READ-WRITE S3 ACCESS KEY                                |
 | S3_SECRET_KEY             | -             |     YES       | ${S3_BUCKET} READ-WRITE S3 ACCESS SECRET                             |
 | S3_ENDPOINT               | -             |     YES       | S3 API URL                                                           |
