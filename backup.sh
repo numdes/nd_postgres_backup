@@ -16,7 +16,7 @@ else
 fi
 
 # Disable hourly backups
-if [[ ${HOURLY_BACKUP_LIMIT} == 0 ]]; then
+if [[ "${HOURLY_BACKUP_LIMIT}" == "0" && "${backup_path}" =~ ^hourly.? ]]; then
   echo "Hourly backups are disabled. Exiting..."
   exit 0
 fi
